@@ -6,14 +6,14 @@
     "email": "developer.vinicius.andrade@gmail.com"
   },
   "metadata": {
-    "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor code.",
-    "version": "1.0.0"
+    "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor and develop code, one plugin per action, one skill per stack.",
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "refactor",
-      "description": "Refactoring guidelines for coding agents, one skill per stack. Skills: refactor:dotnet8 (behavior-preserving refactor of layered/DDD .NET 8 backends).",
-      "version": "1.0.0",
+      "description": "Refactoring guidelines for coding agents, one skill per stack. Skills: refactor:dotnet (version-agnostic C#/.NET refactoring), refactor:dotnet8 (behavior-preserving refactoring of layered/DDD .NET 8 backends), refactor:react (React/TypeScript refactoring).",
+      "version": "1.2.0",
       "source": "./",
       "strict": false,
       "category": "refactoring",
@@ -21,16 +21,23 @@
         "refactoring",
         "dotnet",
         "dotnet8",
+        "react",
+        "typescript",
         "csharp",
         "ddd",
         "clean-architecture"
       ],
-      "skills": ["./skills/refactor/dotnet8"]
+      "skills": [
+        "./skills/refactor/dotnet",
+        "./skills/refactor/dotnet8",
+        "./skills/refactor/react"
+      ],
+      "homepage": "https://github.com/dev-vinicius-andrade/agent-skills"
     },
     {
       "name": "develop",
-      "description": "Development guidelines for coding agents writing new code, one skill per stack. Skills: develop:dotnet8 (compact rules for new features and fixes in layered/DDD .NET 8 backends).",
-      "version": "1.0.0",
+      "description": "Development guidelines for coding agents writing new code, one skill per stack. Skills: develop:dotnet8 (new features and fixes in layered/DDD .NET 8 backends), develop:react (new React/TypeScript components, hooks, and features).",
+      "version": "1.2.0",
       "source": "./",
       "strict": false,
       "category": "development",
@@ -40,9 +47,16 @@
         "dotnet8",
         "csharp",
         "ddd",
-        "clean-architecture"
+        "clean-architecture",
+        "react",
+        "typescript",
+        "frontend"
       ],
-      "skills": ["./skills/develop/dotnet8"]
+      "skills": [
+        "./skills/develop/dotnet8",
+        "./skills/develop/react"
+      ],
+      "homepage": "https://github.com/dev-vinicius-andrade/agent-skills"
     }
   ]
 }

@@ -1,3 +1,5 @@
+<!-- GENERATED from shared/dotnet8/domain-model.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
+
 # Domain Model Recipes
 
 Illustrative names only (orders, catalog items, versions). Apply the pattern, not the names.

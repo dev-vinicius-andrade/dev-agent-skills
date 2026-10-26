@@ -1,4 +1,8 @@
-# Test Strategy for Backend Refactors
+<!-- GENERATED from shared/dotnet/test-strategy.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
+
+# Test Strategy (.NET)
+
+Shared by every .NET skill: baseline and characterization tests for refactors, tests-with-the-change for new code.
 
 Locate the existing test projects (search for `*.Tests.csproj`, `*Tests*` folders, or test SDK references). Match the framework (xUnit, NUnit, MSTest) and mocking library (Moq, NSubstitute, FakeItEasy) they already use. `<solution>` below is the solution file found during discovery.
 
@@ -39,6 +43,16 @@ public void CalculateTotal_WithDiscountCode_ReturnsCurrentBehavior()
 - **Strategy extraction**: one test per strategy in isolation, one for the factory selecting each, one for "no handler" throwing the typed exception.
 - **Span/pooling change**: same input/output table as before; include empty, whitespace, non-ASCII; benchmark or allocation count as evidence.
 - **Exception swap**: assert the new typed exception and that the HTTP status via central handling is unchanged.
+
+## Tests for new code
+
+- Every new rule, branch and endpoint ships with tests in the existing framework, in the same change.
+- Domain: invariants, every intent method, value object `From` validation and JSON round-trip.
+- Strategies: each case, factory selection, "no handler" exception.
+- Application: mock repositories, external services, `TimeProvider`.
+- API: status codes for success, validation failure, not found.
+- Bug fix: first a failing test that reproduces the bug, then the fix.
+- Verify: test count = baseline + new tests.
 
 ## Mocking
 

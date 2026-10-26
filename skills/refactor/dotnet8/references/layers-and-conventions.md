@@ -1,3 +1,5 @@
+<!-- GENERATED from shared/dotnet8/layers-and-conventions.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
+
 # Layers and Conventions
 
 Use this to decide where a refactored type goes and what conventions it must keep. These are defaults: when the repository documents or consistently follows a different convention, keep the repository's and report the difference.

@@ -1,0 +1,46 @@
+{
+  "$comment": "Which shared/ sources are copied into each skill's references/ folder. Run: node scripts/sync-shared.mjs",
+  "skills": {
+    "skills/refactor/dotnet": [
+      "core/clean-code.md",
+      "core/commit-hygiene.md",
+      "dotnet/test-strategy.md"
+    ],
+    "skills/refactor/dotnet8": [
+      "core/clean-code.md",
+      "core/commit-hygiene.md",
+      "dotnet/test-strategy.md",
+      "dotnet8/rules.md",
+      "dotnet8/code-shape.md",
+      "dotnet8/domain-model.md",
+      "dotnet8/layers-and-conventions.md",
+      "dotnet8/mapping-and-performance.md"
+    ],
+    "skills/develop/dotnet8": [
+      "core/clean-code.md",
+      "core/commit-hygiene.md",
+      "dotnet/test-strategy.md",
+      "dotnet8/rules.md",
+      "dotnet8/code-shape.md",
+      "dotnet8/domain-model.md",
+      "dotnet8/layers-and-conventions.md",
+      "dotnet8/mapping-and-performance.md"
+    ],
+    "skills/refactor/react": [
+      "core/clean-code.md",
+      "core/commit-hygiene.md",
+      "react/hooks-and-state.md",
+      "react/patterns.md",
+      "react/react19-features.md",
+      "react/anti-patterns.md"
+    ],
+    "skills/develop/react": [
+      "core/clean-code.md",
+      "core/commit-hygiene.md",
+      "react/hooks-and-state.md",
+      "react/patterns.md",
+      "react/react19-features.md",
+      "react/anti-patterns.md"
+    ]
+  }
+}

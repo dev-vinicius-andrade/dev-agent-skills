@@ -1,6 +1,8 @@
-# Code Shape Recipes
+<!-- GENERATED from shared/dotnet8/code-shape.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
 
-Illustrative examples (names are made up). Apply the pattern, not the names.
+# Code Shape Recipes (C#)
+
+C# forms of the rules in [clean-code.md](clean-code.md). Illustrative examples (names are made up). Apply the pattern, not the names.
 
 ## Recipe orchestrator
 
@@ -30,41 +32,41 @@ Guards, iterations, fallbacks, and serialization pipelines each get their own me
 Before: loop -> if -> loop -> if. After: pipeline of one-level functions plus small boolean queries.
 
 ```csharp
-public sealed record BindingStats(int Total, int Resolved)
+public sealed record ImportStats(int Total, int Matched)
 {
-    public int Missing => Total - Resolved;
-    public static BindingStats Empty => new(0, 0);
-    public BindingStats Add(BindingStats other) => new(Total + other.Total, Resolved + other.Resolved);
+    public int Unmatched => Total - Matched;
+    public static ImportStats Empty => new(0, 0);
+    public ImportStats Add(ImportStats other) => new(Total + other.Total, Matched + other.Matched);
 }
 
-public static BindingStats CountBindingStats(
-    IReadOnlyList<JsonElement> pageSchemas,
-    IReadOnlyList<IReadOnlyDictionary<string, string>> pageInputs) =>
-    pageSchemas
-        .Select((schema, pageIndex) => ProcessPage(schema, pageInputs.ElementAtOrDefault(pageIndex)))
-        .Aggregate(BindingStats.Empty, (total, page) => total.Add(page));
+public static ImportStats CountImportStats(
+    IReadOnlyList<JsonElement> batches,
+    IReadOnlyList<IReadOnlyDictionary<string, string>> catalogs) =>
+    batches
+        .Select((batch, batchIndex) => ProcessBatch(batch, catalogs.ElementAtOrDefault(batchIndex)))
+        .Aggregate(ImportStats.Empty, (total, batch) => total.Add(batch));
 
-private static BindingStats ProcessPage(JsonElement pageSchema, IReadOnlyDictionary<string, string>? pageInputs)
+private static ImportStats ProcessBatch(JsonElement batch, IReadOnlyDictionary<string, string>? catalog)
 {
-    if (pageSchema.ValueKind != JsonValueKind.Array)
-        return BindingStats.Empty;
+    if (batch.ValueKind != JsonValueKind.Array)
+        return ImportStats.Empty;
 
-    return pageSchema.EnumerateArray()
-        .Where(field => field.ValueKind == JsonValueKind.Object)
-        .Where(HasDataBinding)
-        .Aggregate(BindingStats.Empty, (stats, field) => EvaluateField(field, pageInputs, stats));
+    return batch.EnumerateArray()
+        .Where(item => item.ValueKind == JsonValueKind.Object)
+        .Where(HasIdentity)
+        .Aggregate(ImportStats.Empty, (stats, item) => EvaluateItem(item, catalog, stats));
 }
 
-private static bool HasDataBinding(JsonElement field) =>
-    HasPopulatedString(field, "dataFieldPath") || HasPopulatedArray(field, "variables");
+private static bool HasIdentity(JsonElement item) =>
+    HasPopulatedString(item, "sku") || HasPopulatedArray(item, "aliases");
 
-private static bool HasPopulatedString(JsonElement field, string propertyName) =>
-    field.TryGetProperty(propertyName, out var property)
+private static bool HasPopulatedString(JsonElement item, string propertyName) =>
+    item.TryGetProperty(propertyName, out var property)
     && property.ValueKind == JsonValueKind.String
     && !string.IsNullOrWhiteSpace(property.GetString());
 
-private static bool HasPopulatedArray(JsonElement field, string propertyName) =>
-    field.TryGetProperty(propertyName, out var property)
+private static bool HasPopulatedArray(JsonElement item, string propertyName) =>
+    item.TryGetProperty(propertyName, out var property)
     && property.ValueKind == JsonValueKind.Array
     && property.GetArrayLength() > 0;
 ```
@@ -74,17 +76,17 @@ Tools: guard clause + early return, `Where/Select/Aggregate`, extracted boolean 
 ## Replace tuples
 
 ```csharp
-// before: (string SkeletonJson, List<Embed> Embeds) Extract(...)
-public sealed record ExtractedEmbedBundle(string SkeletonJson, IReadOnlyList<Embed> Embeds);
+// before: (string HeaderJson, List<Attachment> Attachments) Parse(...)
+public sealed record ParsedMessage(string HeaderJson, IReadOnlyList<Attachment> Attachments);
 ```
 
-Put derived logic on the record (see `BindingStats`). Only allowed tuple: short-lived `(bool Success, T? Value, Error? Error)`.
+Put derived logic on the record (see `ImportStats`). Only allowed tuple: short-lived `(bool Success, T? Value, Error? Error)`.
 
 ## Never mutate arguments
 
 ```csharp
-// before: void Apply(Template template) { template.Name = name; }
-public static Template WithName(Template template, string name) => template with { Name = name };
+// before: void Apply(Invoice invoice) { invoice.Reference = reference; }
+public static Invoice WithReference(Invoice invoice, string reference) => invoice with { Reference = reference };
 ```
 
 For entities, mutation is allowed only inside the entity through intent-named methods; callers never poke fields of arguments they were handed.
@@ -92,9 +94,9 @@ For entities, mutation is allowed only inside the entity through intent-named me
 ## Comments become methods
 
 ```csharp
-// before:  // Structure chunk sent immediately
-//          await channel.WriteAsync(skeleton, ct);
-await SendStructureChunkImmediatelyAsync(channel, skeleton, cancellationToken);
+// before:  // Send the header first so the client can render progressively
+//          await channel.WriteAsync(header, ct);
+await SendHeaderFirstAsync(channel, header, cancellationToken);
 ```
 
 ## Typed domain exceptions

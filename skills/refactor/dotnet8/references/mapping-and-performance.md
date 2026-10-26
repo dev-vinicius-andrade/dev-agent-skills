@@ -1,3 +1,5 @@
+<!-- GENERATED from shared/dotnet8/mapping-and-performance.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
+
 # Mapping and Performance Recipes
 
 All type names below are made up for illustration. Apply the pattern, not the names.
