@@ -1,4 +1,4 @@
-# agent-skills
+# dev-agent-skills
 
 A marketplace of agent skills: opinionated, project-agnostic guidelines that tell coding agents **how** to do a kind of work (refactor, develop) the way I want it done, in any repository.
 
@@ -39,7 +39,7 @@ Which one?
 ### Claude Code (plugin marketplace)
 
 ```text
-/plugin marketplace add dev-vinicius-andrade/agent-skills
+/plugin marketplace add dev-vinicius-andrade/dev-agent-skills
 /plugin install refactor@dev-agent-skills
 /plugin install develop@dev-agent-skills
 ```
@@ -57,7 +57,7 @@ Zip a skill folder (e.g. `skills/refactor/dotnet8/`) and upload it under **Setti
 Copy or symlink the skill folder into wherever your agent loads instructions from, or reference its `SKILL.md` from your project's `AGENTS.md`:
 
 ```markdown
-When refactoring .NET code, follow `path/to/agent-skills/skills/refactor/dotnet8/SKILL.md`.
+When refactoring .NET code, follow `path/to/dev-agent-skills/skills/refactor/dotnet8/SKILL.md`.
 ```
 
 ## How skills behave in a project
