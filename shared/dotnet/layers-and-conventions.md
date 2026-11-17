@@ -6,7 +6,7 @@ Use this to decide where a refactored type goes and what conventions it must kee
 
 ## Architecture
 
-- DDD with onion/clean architecture, `net8.0`, `Nullable` and `ImplicitUsings` enabled.
+- DDD with onion/clean architecture, the target framework found during discovery (see versions.md), `Nullable` and `ImplicitUsings` enabled.
 - JSON: one library across the solution. Keep the one in use (`System.Text.Json` by default); never introduce a second.
 - Dependency flow: `Presentation -> Application -> Domain <- Infrastructure(s)`. No layer references a layer above it. Presentation references Infrastructure projects solely to register them in DI.
 

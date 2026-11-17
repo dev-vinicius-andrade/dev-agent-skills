@@ -1,6 +1,6 @@
-# .NET 8 Rules (layered / DDD backends)
+# .NET Rules
 
-The full rule set shared by `refactor:dotnet8` and `develop:dotnet8`. It applies the language-agnostic [clean-code.md](clean-code.md) to C# 12 / `net8.0`. Recipes: [code-shape.md](code-shape.md), [domain-model.md](domain-model.md), [mapping-and-performance.md](mapping-and-performance.md), [layers-and-conventions.md](layers-and-conventions.md), [test-strategy.md](test-strategy.md).
+The version-neutral rule set shared by `refactor:dotnet` and `develop:dotnet`. It applies the language-agnostic [clean-code.md](clean-code.md) to C#. Every rule here holds from .NET 8 / C# 12 upward; the version packs selected by [versions.md](versions.md) add or replace idioms per target framework. Placement, Model, Application and Infrastructure sections apply to layered / DDD backends; Shape, Async and Performance apply to all C# code. Recipes: [code-shape.md](code-shape.md), [domain-model.md](domain-model.md), [mapping-and-performance.md](mapping-and-performance.md), [layers-and-conventions.md](layers-and-conventions.md), [test-strategy.md](test-strategy.md).
 
 ## Placement
 
@@ -24,8 +24,8 @@ The full rule set shared by `refactor:dotnet8` and `develop:dotnet8`. It applies
 - Entities: private setters, intent-named methods (`Publish()`, `Rename()`), never `SetX()`. Invariants in factory / constructor and every mutator. `Create(...)` for new, `Rehydrate(...)` for storage hydration, never public mutators from a repository. Collections exposed read-only. Aggregates reference each other by id.
 - Value objects for meaningful primitives (ids, statuses, paths, money, emails): `readonly record struct` (or `record`), private constructor, validating `From` / `Create`, `Value` property, **no implicit conversion** to / from the primitive, custom `JsonConverter` so the wire format stays the primitive.
 - Repositories take and return aggregates; query projections are `*Summary` / `*ReadModel`.
-- Business failures: typed exceptions deriving from `DomainException` in `Domain/Exceptions/`, mapped to HTTP in one central place. Never throw `Exception` / `InvalidOperationException` for business cases; `ArgumentException` only for argument-shape guards. No `Result<T, TError>` type unless the team agrees.
-- Behavior that varies by type / format: `CanHandle` strategy (below). No `switch` / `OfType<>` ladders.
+- Business failures: typed exceptions deriving from `DomainException` in `Domain/Exceptions/`, mapped to HTTP in one central place. Never throw `Exception` / `InvalidOperationException` for business cases; `ArgumentException` only for argument-shape guards. No hand-rolled `Result<T, TError>` type unless the team agrees; on C# 15 a union of outcomes is the sanctioned alternative where the team adopts it (net11.md). One error style per feature.
+- Behavior that varies by type / format: `CanHandle` strategy (below) when the set of cases is open (new cases plausible, cases registered by other assemblies). No `switch` / `OfType<>` ladders. When the set is closed and known at compile time, C# 15 unions or `closed` hierarchies with exhaustive `switch` are the better tool (net11.md).
 
 ## Strategy pattern (CanHandle)
 
@@ -64,7 +64,7 @@ Contract in Domain, one small `internal sealed` class per case, DI collects `IEn
 - Every async method takes `CancellationToken cancellationToken = default` and forwards it down the chain; `ThrowIfCancellationRequested()` in long loops and streams. No `.Result`, `.Wait()`, `async void`.
 - `ConfigureAwait`: follow the project's policy. ASP.NET Core apps and workers have no sync context; libraries consumed by UI / legacy hosts use `ConfigureAwait(false)` consistently.
 - Nullable enabled and respected; switch expressions and patterns to flatten; `ArgumentNullException.ThrowIfNull`; primary constructors for DI.
-- `net8.0` only: no .NET 9+ APIs. One JSON library (keep the project's; `System.Text.Json` by default).
+- Never use an API or language feature the target framework / effective `LangVersion` lacks (versions.md). One JSON library (keep the project's; `System.Text.Json` by default).
 
 ## Performance
 

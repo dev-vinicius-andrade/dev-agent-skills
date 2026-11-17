@@ -1,78 +1,105 @@
 ---
 name: dotnet
 description: >
-  Refactor guideline for .NET (invoked as refactor:dotnet). Version- and architecture-agnostic refactoring of
-  C#/.NET code (any target framework, any project shape): decoupling, dependency injection, structured logging,
-  error handling, design patterns, clean code, with a test safety net and a phased plan. Use when asked to
-  refactor, restructure, clean up, decouple, or reduce technical debt in a C#/.NET codebase, or to produce a
-  refactoring plan. For a layered / DDD backend on .NET 8 use refactor:dotnet8, which carries the stricter rule
-  set. Not for greenfield scaffolding, database migrations, or unrelated CI/CD work.
+  Refactor guideline for .NET (invoked as refactor:dotnet). Behavior-preserving refactoring of C#/.NET code on
+  any supported target (.NET 8, 9, 10, 11 / C# 12-15): detects the target framework and LangVersion and loads
+  the matching version packs (Lock, params spans, extension members, field keyword, unions, closed
+  hierarchies, ...). Covers decoupling, DI, structured logging, recipe-style orchestrators with max one
+  indentation level, immutability, typed errors, and for layered / DDD backends business rules in the Domain,
+  value objects, CanHandle strategies, conversion-operator mapping and measured span-based allocation cuts. Use
+  when asked to refactor, clean up, flatten, decouple, modernize idioms, or reduce tech debt in C#/.NET code, or
+  to produce a refactoring plan. For new features or bug fixes use develop:dotnet. Not for framework
+  retargeting, DB migrations, frontend code, or CI work.
 ---
 
 # Refactor: .NET
 
-Act as a principal .NET engineer. Goal: more maintainable, testable code with **no observable behavior change**, on whatever framework version and architecture the repository uses.
+Act as a principal .NET engineer. Goal: better structure and performance with **zero observable behavior change**, using only what the project's target framework and C# version provide.
 
-References, loaded when needed:
+**Before changing code read [references/versions.md](references/versions.md) and [references/rules.md](references/rules.md)**, then load the version packs `versions.md` selects. References:
 
-- [references/clean-code.md](references/clean-code.md) — language-agnostic core rules every change follows.
+- [references/versions.md](references/versions.md) — detect target / LangVersion, which packs to load, multi-targeting, support status.
+- [references/net8.md](references/net8.md), [references/net9.md](references/net9.md), [references/net10.md](references/net10.md), [references/net11.md](references/net11.md) — per-version idioms: prefer, replace (old -> new), traps.
+- [references/rules.md](references/rules.md) — version-neutral rule set (shared with `develop:dotnet`).
+- [references/clean-code.md](references/clean-code.md) — language-agnostic core rules.
+- [references/code-shape.md](references/code-shape.md) — C# recipes: orchestrators, flattening, tuples, exceptions, async.
+- [references/domain-model.md](references/domain-model.md) — aggregates, entities, value objects, domain services.
+- [references/mapping-and-performance.md](references/mapping-and-performance.md) — conversion operators, spans, pooling.
+- [references/layers-and-conventions.md](references/layers-and-conventions.md) — layer ownership, folders, naming, DI, controllers, logging, docs.
 - [references/test-strategy.md](references/test-strategy.md) — baseline, characterization tests, Go / No-Go.
 - [references/commit-hygiene.md](references/commit-hygiene.md) — branches, commit size and format, hand-off.
-
-If the target is a layered / DDD backend on `net8.0`, switch to `refactor:dotnet8`.
 
 ## Precedence
 
 1. Explicit instructions in the task.
 2. Conventions the target repository documents (`AGENTS.md`, `CLAUDE.md`, `README`, `docs/`, `.editorconfig`, `Directory.Build.props`, analyzers) or consistently follows in code.
-3. The defaults in this skill.
+3. The version packs for the target (they never override 1 or 2).
+4. The other defaults in this skill.
 
-Report any default you did not apply because the repository says otherwise. Never use APIs the target framework lacks.
+When a default conflicts with a repository convention, follow the repository and list the conflict in the final report. Do not "fix" consistent existing patterns silently.
 
 ## Workflow
 
-1. **Discover** — build a model of the codebase and output a Discovery Summary ranked by severity and blast radius:
-   - solution structure: projects, layers, assembly dependency graph, target framework(s);
-   - coupling hotspots: many concrete dependencies, God classes, circular references, `new` of services, service locators;
-   - smells: long methods (> ~30 lines), large classes (> ~300 lines), deep nesting, primitive obsession, feature envy, shotgun surgery, duplication;
-   - logging: framework in use (`Microsoft.Extensions.Logging`, Serilog, NLog) vs `Console.WriteLine` / `Debug.WriteLine`; structured or interpolated;
-   - error handling: catch-all, swallowed exceptions, missing context, generic exception types;
-   - naming and organization: namespaces vs folders, conventions.
-2. **Baseline** — run the build and `dotnet test`; record counts; add characterization tests for untested code you will change (see test-strategy). All green before the first refactor commit.
-3. **Plan** — phased plan in chat (Markdown file only when asked or the repository workflow requires it). Each phase independently shippable, listing: changes, specific files / classes / methods, before / after sketches for non-trivial moves, tests to run / add, rollback, risk (low / med / high) with reason.
-4. **Execute** — in Phase order, one concern per commit. Refactor internals first; change public signatures only when the plan says so. Prefer IDE refactors (rename, extract method / interface). Constructor injection over property / method injection.
-5. **Verify** — after every phase: build with no new warnings (warnings-as-errors only if the repository configures it), all tests pass, count not lower than baseline, coverage not lower. Fail = stop and fix.
-6. **Self-review** — run the Checklist, fix issues, then deliver.
+1. **Discover** — record a short Project Profile before touching code:
+   - solution file (`*.sln` / `*.slnx`), projects, and whether they form layers (Domain / Application / Infrastructure / Presentation or equivalent);
+   - per touched project: `TargetFramework(s)`, effective `LangVersion`, `global.json` SDK; the packs this selects (versions.md);
+   - test projects, test framework, mocking library;
+   - how errors become HTTP responses today, error style (exceptions, unions, result types), JSON library, DI and logging style;
+   - where docs live and how they are indexed; commit / branch conventions.
+   Read the docs of every unit you will touch.
+2. **Smells** — list smells in scope ranked by blast radius (Smell list), plus outdated idioms the loaded packs replace. Output a short Discovery Summary.
+3. **Baseline** — `dotnet build <solution>` and `dotnet test <solution>` green; record pass / fail / skip. Add characterization tests for every untested rule or branch you will move.
+4. **Plan** — phased plan in chat: files, classes, methods, tests to run / add, risk (low / med / high) with reason, rollback. Each phase independently shippable and one concern. Markdown file only on request.
+5. **Execute** — in Phase order, one concern per commit, additive first: introduce new types, migrate call sites, delete old surface last. Prefer IDE / tool refactors.
+6. **Verify** — after every phase: build with no new warnings, tests green, count never below baseline. Fail = stop and fix.
+7. **Docs** — in the same change: update the docs of touched units and keep any doc index exact.
+8. **Self-review** — run the Checklist; report unmet items.
 
-### Phase order
+### Smell list
 
-1. **Foundation** — logging and cross-cutting concerns first, for observability of every later change.
-2. **Decoupling** — interfaces at seams, DI registration, remove service locators and `new` of services; makes code testable.
-3. **Structure** — guard clauses, flatten nesting, recipe orchestrators, typed results instead of tuples, typed exceptions, strategies instead of type switches (clean-code.md).
-4. **Clean code** — naming, comment-to-method extraction, dead code removal, folder / namespace alignment.
-5. **Cleanup** — final test run, removed dead code listed, docs updated.
+Business `if` in Application / Presentation; methods nested > 1 level; loose `if/for/switch` in orchestrators; tuples as payloads; primitives carrying rules; public setters on entities; exposed mutable collections; type-discriminator ladders; generic exceptions; swallowed exceptions; async without `CancellationToken`; mutated arguments; throwaway names; explanatory comments; serialization / infra types in Domain; per-pair mapper classes; reflection mappers; `new` of services and service locators; `Console.WriteLine` / interpolated log templates; allocation-heavy string / byte handling on hot paths; idioms the loaded version packs replace.
 
-## Core rules
+### Phase order (one concern per commit)
 
-- Apply [clean-code.md](references/clean-code.md): recipe orchestrators, one nesting level, no argument mutation, intent names, no narrating comments, named types over tuples, typed errors, `CanHandle`-style handlers over ladders.
-- Logging: inject `ILogger<T>` (or the project's logger); structured templates with named placeholders, never interpolation; right levels; never log and swallow.
-- Async: `CancellationToken` on async methods, forwarded; no `.Result`, `.Wait()`, `async void`.
-- Patterns are justified by a concrete problem, never applied for their own sake. Every new abstraction has one clear purpose.
-- Public API, wire formats, DB schema and stored files are frozen unless the task says otherwise.
+1. Characterization tests.
+2. Logging and cross-cutting concerns (observability for every later phase), when they are missing.
+3. Decoupling: interfaces at seams, constructor injection, remove service locators and `new` of services.
+4. Guard clauses, flatten nesting, extract recipe sub-methods.
+5. Tuples to `sealed record` (or a union on C# 15); mapper classes to conversion operators.
+6. Typed errors (HTTP outcomes proven unchanged by tests).
+7. Layered / DDD only: value objects over primitives (wire-compatible); business rules to Domain; private setters, intent-named methods, read-only collections.
+8. Type switches: `CanHandle` strategies for open sets; unions / `closed` hierarchies for closed sets on C# 15.
+9. Version idioms from the loaded packs, one idiom per commit, only swaps the pack marks equivalent.
+10. Hot-path allocations: spans / pooling, with benchmark evidence.
+11. Naming, comment-to-method extraction, folder moves (never mixed with behavior moves).
 
-## Checklist
+## Non-negotiables (full text in rules.md and the packs)
 
-- [ ] Discovery Summary ranked; repository conventions respected (conflicts reported).
-- [ ] Every phase names specific files, classes and methods — no vague "refactor the service layer".
-- [ ] No phase depends on a later one; no phase removes something a later phase uses.
-- [ ] Test strategy explicit per phase; characterization tests added; counts >= baseline.
-- [ ] Before / after sketches are valid C# for the target framework.
-- [ ] Rollback strategy is realistic (not just "revert the commit").
-- [ ] Logging is structured with proper levels.
-- [ ] clean-code.md rules hold for every touched method.
-- [ ] No unnecessary complexity introduced; each pattern has a stated reason.
-- [ ] Commits follow commit-hygiene (or the repository's rules).
+- Never use an API or language feature the target framework / effective `LangVersion` lacks; never raise either, never enable preview features.
+- Orchestrators are recipes; every method has at most one indentation level; no argument mutation; no business tuples.
+- Layered code: business decisions live in Domain; Application loads -> calls domain behavior -> saves -> maps; controllers translate transport only.
+- Typed errors mapped to transport in one place; one error style per feature; no reflection mappers.
+- `CancellationToken cancellationToken = default` on every async method, forwarded.
+- Frozen: API JSON, routes, DB schema / procs, stored and exported files, public package APIs, HTTP status outcomes. Before changing error flow, record today's exception-to-status mapping and keep it identical.
+- Patterns need a concrete problem; every new abstraction has one purpose.
+
+## Checklist (run before finishing)
+
+- [ ] Project Profile recorded, including target(s), LangVersion and loaded packs; repo conventions respected.
+- [ ] No API or syntax above the target / LangVersion; multi-target code follows the lowest target.
+- [ ] Each new type in the right layer; dependency flow intact; repositories still `internal`.
+- [ ] Orchestrators are recipes; zero loose flow blocks; every method <= 1 indentation level; no argument mutation.
+- [ ] No business tuples; mappings via conversion operators, not mapper classes or reflection mappers.
+- [ ] Layered code: decisions in Domain, intent-named mutators, read-only collections, wire-compatible value objects.
+- [ ] Open sets use `CanHandle`; closed sets use unions / `closed` hierarchies where C# 15 is available; switches exhaustive without `_`.
+- [ ] Typed errors; one error style per feature; Domain free of serialization / infra / transport types.
+- [ ] Every async method propagates `CancellationToken`; logging structured.
+- [ ] Version-idiom swaps one per commit and covered by tests; out-of-scope modernizations listed, not done.
+- [ ] Spans / pooling only with evidence, behind unchanged public contracts.
+- [ ] Build clean; test count >= baseline; characterization tests added.
+- [ ] No contract change (unless requested); HTTP outcomes unchanged; single JSON library.
+- [ ] Docs and doc indexes updated; commits follow commit-hygiene (or the repository's rules).
 
 ## Final report
 
-Summarize what changed per phase, tests before / after (counts), unmet checklist items, repository conventions that overrode a default, and what was deliberately left for later.
+Project Profile (one line each, with target / LangVersion / packs), phases done, tests before / after (counts), unmet checklist items, conventions that overrode a default, docs touched, follow-ups (out-of-scope modernizations, end-of-support target), and anything deliberately left in place.

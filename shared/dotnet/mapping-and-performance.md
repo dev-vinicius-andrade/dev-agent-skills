@@ -1,5 +1,3 @@
-<!-- GENERATED from shared/dotnet8/mapping-and-performance.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
-
 # Mapping and Performance Recipes
 
 All type names below are made up for illustration. Apply the pattern, not the names.
@@ -57,7 +55,7 @@ Apply to hot paths only (e.g. document/report generation, JSON or template parsi
 |-------|--------------|
 | `Substring`, `Split`, `Trim` results only compared/parsed/looked up | `ReadOnlySpan<char>` slices (`AsSpan`, `Slice`, `Trim()`), `int.TryParse(span, ...)` |
 | `string.Equals` on pieces of a larger string | `span.SequenceEqual` / `span.Equals(other, StringComparison.Ordinal)` |
-| Field path walked by `Split('.')` | `IndexOf` loop over `ReadOnlySpan<char>` (span `Split` does not exist on .NET 8) |
+| Field path walked by `Split('.')` | span split enumerator (.NET 9+, see net9.md) or an `IndexOf` loop over `ReadOnlySpan<char>` (.NET 8) |
 | `byte[]` parameter only read | `ReadOnlySpan<byte>` (sync) or `ReadOnlyMemory<byte>` (async / stored) |
 | `byte[]` / `MemoryStream` copy just to read a slice | `ReadOnlyMemory<byte>` slice, or `ReadOnlySequence<byte>` |
 | Small temp buffer via `new T[n]` | `stackalloc` into `Span<T>` (<= ~256 bytes, constant bound) |
@@ -81,7 +79,7 @@ Rules:
 - Keep the 1-indentation rule: span loops go in small private static helpers.
 - Never keep a span-derived result beyond the owner's lifetime (`stackalloc`, pooled array). Copy (`ToArray`, `ToString`) once at the boundary.
 - Always `Return` pooled arrays in `finally`; `clearArray: true` for sensitive data.
-- .NET 8: `Dictionary<string,...>` cannot be looked up by span (`GetAlternateLookup<ReadOnlySpan<char>>()` is .NET 9+). Use `FrozenDictionary`/`string` keys at the boundary, or a switch on the span for small fixed sets.
+- Span-keyed dictionary lookup: `GetAlternateLookup<ReadOnlySpan<char>>()` on .NET 9+ (net9.md). On .NET 8, use `FrozenDictionary`/`string` keys at the boundary, or a switch on the span for small fixed sets.
 - Characterization test before/after with the same inputs: empty, whitespace, non-ASCII.
 
 ## Type-design performance (when measured)

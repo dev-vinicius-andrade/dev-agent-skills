@@ -7,53 +7,56 @@
   },
   "metadata": {
     "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor and develop code, one plugin per action, one skill per stack.",
-    "version": "1.2.0"
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "refactor",
-      "description": "Refactoring guidelines for coding agents, one skill per stack. Skills: refactor:dotnet (version-agnostic C#/.NET refactoring), refactor:dotnet8 (behavior-preserving refactoring of layered/DDD .NET 8 backends), refactor:react (React/TypeScript refactoring).",
-      "version": "1.2.0",
+      "description": "Refactoring guidelines for coding agents, one skill per stack. Skills: refactor:dotnet (behavior-preserving C#/.NET refactoring with per-version packs for .NET 8-11 / C# 12-15), refactor:react (React/TypeScript refactoring).",
+      "version": "2.0.0",
       "source": "./",
       "strict": false,
       "category": "refactoring",
       "keywords": [
         "refactoring",
         "dotnet",
-        "dotnet8",
         "react",
         "typescript",
         "csharp",
         "ddd",
-        "clean-architecture"
+        "clean-architecture",
+        "dotnet10",
+        "dotnet11",
+        "csharp15"
       ],
       "skills": [
         "./skills/refactor/dotnet",
-        "./skills/refactor/dotnet8",
         "./skills/refactor/react"
       ],
       "homepage": "https://github.com/dev-vinicius-andrade/dev-agent-skills"
     },
     {
       "name": "develop",
-      "description": "Development guidelines for coding agents writing new code, one skill per stack. Skills: develop:dotnet8 (new features and fixes in layered/DDD .NET 8 backends), develop:react (new React/TypeScript components, hooks, and features).",
-      "version": "1.2.0",
+      "description": "Development guidelines for coding agents writing new code, one skill per stack. Skills: develop:dotnet (new C#/.NET features and fixes with per-version packs for .NET 8-11 / C# 12-15), develop:react (new React/TypeScript components, hooks, and features).",
+      "version": "2.0.0",
       "source": "./",
       "strict": false,
       "category": "development",
       "keywords": [
         "development",
         "dotnet",
-        "dotnet8",
         "csharp",
         "ddd",
         "clean-architecture",
         "react",
         "typescript",
-        "frontend"
+        "frontend",
+        "dotnet10",
+        "dotnet11",
+        "csharp15"
       ],
       "skills": [
-        "./skills/develop/dotnet8",
+        "./skills/develop/dotnet",
         "./skills/develop/react"
       ],
       "homepage": "https://github.com/dev-vinicius-andrade/dev-agent-skills"

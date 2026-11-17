@@ -1,4 +1,4 @@
-<!-- GENERATED from shared/dotnet8/code-shape.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
+<!-- GENERATED from shared/dotnet/code-shape.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
 
 # Code Shape Recipes (C#)
 

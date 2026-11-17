@@ -1,4 +1,4 @@
-<!-- GENERATED from shared/dotnet8/domain-model.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
+<!-- GENERATED from shared/dotnet/domain-model.md by scripts/sync-shared.mjs. Edit the source, then re-run the script. -->
 
 # Domain Model Recipes
 

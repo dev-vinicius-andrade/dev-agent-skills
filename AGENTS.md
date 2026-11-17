@@ -14,17 +14,25 @@ Rules for any agent (or human) adding or editing skills here.
 ## Naming: `<action>:<stack>`
 
 - **Action** = verb for the kind of work (`refactor`, `develop`, `bootstrap`, `review`, `migrate`, ...). One plugin per action.
-- **Stack** = what it applies to, including the major version when rules depend on it (`dotnet8`, `dotnet9-api`, `dotnet8-worker`, `react`).
+- **Stack** = the technology family it applies to (`dotnet`, `react`, `dotnet-api`). No version in the name: version differences live in **version packs** (below), so one skill serves every supported version.
 - Folder: `skills/<action>/<stack>/`. Frontmatter `name: <stack>` (lowercase letters, digits, hyphens; no colon). Claude Code exposes it as `<action>:<stack>`.
 - Because the bare `name` loses the action outside Claude Code, start the `description` with "<Action> guideline for <stack> (invoked as <action>:<stack>)."
-- When two skills cover neighboring scopes (`refactor:*` vs `develop:*`, `dotnet` vs `dotnet8`), each description names the other and says when to use it instead.
+- When two skills cover neighboring scopes (`refactor:*` vs `develop:*`), each description names the other and says when to use it instead.
 
 ## Shared rules
 
-- Layout: `shared/core/` (every stack), `shared/<stack-family>/` (e.g. `dotnet/`, `dotnet8/`, `react/`).
-- `shared/manifest.json` maps each skill folder to the shared files it receives. They are copied flat into `<skill>/references/`, so links inside a shared file are written as siblings (`rules.md`, not `../dotnet8/rules.md`), relative to the destination.
+- Layout: `shared/core/` (every stack), `shared/<stack-family>/` (e.g. `dotnet/`, `react/`).
+- `shared/manifest.json` maps each skill folder to the shared files it receives. They are copied flat into `<skill>/references/`, so links inside a shared file are written as siblings (`rules.md`, not `../dotnet/rules.md`), relative to the destination.
 - Generated copies start with a `GENERATED from shared/...` banner. Never edit them; edit the source and run `node scripts/sync-shared.mjs`.
 - Move a rule into `shared/` as soon as a second skill needs it; keep stack-only recipes in the skill's own `references/`.
+
+## Version packs
+
+- A stack whose idioms change between releases gets a selector (`shared/<stack>/versions.md`: how to detect the target, which packs to load, multi-targeting, support table) and one pack per major version (`net8.md`, `net9.md`, ...).
+- The base rules (`rules.md`) hold for the oldest supported version. A pack lists only what its release adds or changes, in three sections: **Prefer**, **Replace (old -> new)** (say when a swap is not behavior-preserving), **Traps**.
+- Packs are cumulative: an agent loads every pack from the oldest up to the target.
+- New release: add one pack, update the support table in the selector, bump the plugins. Never fork a skill per version.
+- Facts in packs come from official release notes; verify API names before adding them.
 
 ## Adding a skill
 
