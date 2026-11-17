@@ -17,7 +17,7 @@ Rules for any agent (or human) adding or editing skills here.
 - **Stack** = the technology family it applies to (`dotnet`, `react`, `dotnet-api`). No version in the name: version differences live in **version packs** (below), so one skill serves every supported version.
 - Folder: `skills/<action>/<stack>/`. Frontmatter `name: <stack>` (lowercase letters, digits, hyphens; no colon). Claude Code exposes it as `<action>:<stack>`.
 - Because the bare `name` loses the action outside Claude Code, start the `description` with "<Action> guideline for <stack> (invoked as <action>:<stack>)."
-- When two skills cover neighboring scopes (`refactor:*` vs `develop:*`), each description names the other and says when to use it instead.
+- When two skills cover neighboring scopes (`refactor:*` vs `develop:*` vs `migrate:*`), each description names the other and says when to use it instead.
 
 ## Shared rules
 

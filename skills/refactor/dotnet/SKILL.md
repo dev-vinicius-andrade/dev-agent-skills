@@ -8,8 +8,8 @@ description: >
   indentation level, immutability, typed errors, and for layered / DDD backends business rules in the Domain,
   value objects, CanHandle strategies, conversion-operator mapping and measured span-based allocation cuts. Use
   when asked to refactor, clean up, flatten, decouple, modernize idioms, or reduce tech debt in C#/.NET code, or
-  to produce a refactoring plan. For new features or bug fixes use develop:dotnet. Not for framework
-  retargeting, DB migrations, frontend code, or CI work.
+  to produce a refactoring plan. For new features or bug fixes use develop:dotnet; to retarget to a newer
+  framework use migrate:dotnet. Not for DB migrations, frontend code, or CI work.
 ---
 
 # Refactor: .NET

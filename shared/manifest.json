@@ -46,6 +46,21 @@
       "react/patterns.md",
       "react/react19-features.md",
       "react/anti-patterns.md"
+    ],
+    "skills/migrate/dotnet": [
+      "core/clean-code.md",
+      "core/commit-hygiene.md",
+      "dotnet/versions.md",
+      "dotnet/net8.md",
+      "dotnet/net9.md",
+      "dotnet/net10.md",
+      "dotnet/net11.md",
+      "dotnet/rules.md",
+      "dotnet/code-shape.md",
+      "dotnet/domain-model.md",
+      "dotnet/layers-and-conventions.md",
+      "dotnet/mapping-and-performance.md",
+      "dotnet/test-strategy.md"
     ]
   }
 }

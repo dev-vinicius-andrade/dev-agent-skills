@@ -8,8 +8,8 @@ description: >
   orchestrators with max one indentation level, immutability, typed errors, CancellationToken everywhere, tests
   with every change, and for layered / DDD backends rules placed in the Domain, value objects, CanHandle
   strategies and conversion-operator mapping. Use when asked to implement, add, build, extend, or fix something
-  in C#/.NET code. For behavior-preserving restructuring use refactor:dotnet instead. Not for project
-  scaffolding, framework retargeting, DB migrations, frontend code, or CI work.
+  in C#/.NET code. For behavior-preserving restructuring use refactor:dotnet; to retarget to a newer
+  framework use migrate:dotnet. Not for project scaffolding, DB migrations, frontend code, or CI work.
 ---
 
 # Develop: .NET

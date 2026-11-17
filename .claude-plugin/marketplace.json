@@ -6,14 +6,14 @@
     "email": "developer.vinicius.andrade@gmail.com"
   },
   "metadata": {
-    "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor and develop code, one plugin per action, one skill per stack.",
-    "version": "2.0.0"
+    "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor, develop and migrate code, one plugin per action, one skill per stack.",
+    "version": "2.1.0"
   },
   "plugins": [
     {
       "name": "refactor",
       "description": "Refactoring guidelines for coding agents, one skill per stack. Skills: refactor:dotnet (behavior-preserving C#/.NET refactoring with per-version packs for .NET 8-11 / C# 12-15), refactor:react (React/TypeScript refactoring).",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "source": "./",
       "strict": false,
       "category": "refactoring",
@@ -38,7 +38,7 @@
     {
       "name": "develop",
       "description": "Development guidelines for coding agents writing new code, one skill per stack. Skills: develop:dotnet (new C#/.NET features and fixes with per-version packs for .NET 8-11 / C# 12-15), develop:react (new React/TypeScript components, hooks, and features).",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "source": "./",
       "strict": false,
       "category": "development",
@@ -58,6 +58,28 @@
       "skills": [
         "./skills/develop/dotnet",
         "./skills/develop/react"
+      ],
+      "homepage": "https://github.com/dev-vinicius-andrade/dev-agent-skills"
+    },
+    {
+      "name": "migrate",
+      "description": "Migration guidelines for coding agents, one skill per stack. Skills: migrate:dotnet (retarget C#/.NET solutions to a newer framework using the per-version packs for .NET 8-11 / C# 12-15, with behavior and contract checks).",
+      "version": "1.0.0",
+      "source": "./",
+      "strict": false,
+      "category": "migration",
+      "keywords": [
+        "migration",
+        "upgrade",
+        "retarget",
+        "dotnet",
+        "dotnet10",
+        "dotnet11",
+        "csharp",
+        "csharp15"
+      ],
+      "skills": [
+        "./skills/migrate/dotnet"
       ],
       "homepage": "https://github.com/dev-vinicius-andrade/dev-agent-skills"
     }

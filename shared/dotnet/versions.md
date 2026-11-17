@@ -12,6 +12,7 @@ The rules in [rules.md](rules.md) hold from .NET 8 / C# 12 upward. Version packs
 ## Load packs
 
 - Load every pack from [net8.md](net8.md) up to the target framework: a `net10.0` project reads net8, net9, net10. Each pack lists only what that release added or changed.
+- **Migrating** (`migrate:dotnet`): load every pack up to the **new** target; the packs above the current target are the crossed versions whose Traps and Replace tables drive the upgrade.
 - **Multi-targeting** (`net8.0;net10.0`): code shared across targets follows the **lowest** target. Newer idioms only inside `#if NET10_0_OR_GREATER` blocks, and only when the gain is real; prefer one code path.
 - **Libraries vs language:** library APIs are gated by the target framework. Language features are gated by the effective `LangVersion`; a syntax-only feature from a newer C# may compile on an older framework, but use it only if the repository already raised `LangVersion` on purpose. Never raise `LangVersion` or the target framework yourself.
 - **Preview:** never enable `<LangVersion>preview</LangVersion>`, `EnablePreviewFeatures` or preview runtime features (e.g. runtime async) unless the repository already does.
@@ -26,7 +27,7 @@ The rules in [rules.md](rules.md) hold from .NET 8 / C# 12 upward. Version packs
 | net10.0 | 14 | LTS | Nov 2028 |
 | net11.0 | 15 | STS | Nov 2028 |
 
-A target past end of support gets no security patches. Mention it once in the report; retargeting is a separate, explicitly requested task, never part of a refactor or a feature.
+A target past end of support gets no security patches. Mention it once in the report; retargeting is a separate, explicitly requested task (`migrate:dotnet`), never part of a refactor or a feature.
 
 ## Modernizing inside a refactor
 
