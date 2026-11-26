@@ -6,8 +6,8 @@
     "email": "developer.vinicius.andrade@gmail.com"
   },
   "metadata": {
-    "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor, develop and migrate code, one plugin per action, one skill per stack.",
-    "version": "2.1.0"
+    "description": "Opinionated, project-agnostic guidelines that tell coding agents how to refactor, develop and migrate code and operate a homelab, one plugin per action, one skill per stack.",
+    "version": "2.2.0"
   },
   "plugins": [
     {
@@ -80,6 +80,35 @@
       ],
       "skills": [
         "./skills/migrate/dotnet"
+      ],
+      "homepage": "https://github.com/dev-vinicius-andrade/dev-agent-skills"
+    },
+    {
+      "name": "homelab",
+      "description": "Homelab operation guidelines for agents, one skill per area, reading lab facts from a private memory vault or inventory. Skills: homelab:services (Docker Compose, Portainer, Kubernetes, Helm, helmfile), homelab:network (DNS, reverse proxy, TLS, VPN, firewall, VLANs), homelab:media (media server, *arr stack, Home Assistant).",
+      "version": "1.0.0",
+      "source": "./",
+      "strict": false,
+      "category": "operations",
+      "keywords": [
+        "homelab",
+        "self-hosted",
+        "docker",
+        "docker-compose",
+        "kubernetes",
+        "helm",
+        "traefik",
+        "dns",
+        "tls",
+        "vpn",
+        "home-assistant",
+        "media-server",
+        "memory-vault"
+      ],
+      "skills": [
+        "./skills/homelab/services",
+        "./skills/homelab/network",
+        "./skills/homelab/media"
       ],
       "homepage": "https://github.com/dev-vinicius-andrade/dev-agent-skills"
     }

@@ -1,6 +1,6 @@
 # dev-agent-skills
 
-A marketplace of agent skills: opinionated, project-agnostic guidelines that tell coding agents **how** to do a kind of work (refactor, develop) the way I want it done, in any repository.
+A marketplace of agent skills: opinionated, project-agnostic guidelines that tell coding agents **how** to do a kind of work (refactor, develop, migrate, operate a homelab) the way I want it done, in any repository.
 
 Every skill is a plain folder with a `SKILL.md`, so it works with Claude Code, the Claude apps, and any other agent that can read Markdown instructions.
 
@@ -15,6 +15,9 @@ Skills are grouped by **action**; each action is one plugin, each stack-specific
 | `develop:dotnet` | `develop` | `dotnet` | `skills/develop/dotnet/` |
 | `migrate:dotnet` | `migrate` | `dotnet` | `skills/migrate/dotnet/` |
 | `develop:react` | `develop` | `react` | `skills/develop/react/` |
+| `homelab:services` | `homelab` | `services` | `skills/homelab/services/` |
+| `homelab:network` | `homelab` | `network` | `skills/homelab/network/` |
+| `homelab:media` | `homelab` | `media` | `skills/homelab/media/` |
 | `bootstrap:dotnet-api` *(planned)* | `bootstrap` | `dotnet-api` | `skills/bootstrap/dotnet-api/` |
 | `bootstrap:dotnet-worker` *(planned)* | `bootstrap` | `dotnet-worker` | `skills/bootstrap/dotnet-worker/` |
 
@@ -27,12 +30,16 @@ Skills are grouped by **action**; each action is one plugin, each stack-specific
 | `develop:dotnet` | New C#/.NET features and fixes, newest idioms the target allows, same rules and version packs as `refactor:dotnet` | [skills/develop/dotnet](skills/develop/dotnet/SKILL.md) |
 | `migrate:dotnet` | Retarget C#/.NET to a newer framework: inventory, crossed version packs, leaf-first upgrade, contract checks, optional modernization | [skills/migrate/dotnet](skills/migrate/dotnet/SKILL.md) |
 | `develop:react` | New React/TypeScript components, hooks and features, same references as `refactor:react` | [skills/develop/react](skills/develop/react/SKILL.md) |
+| `homelab:services` | Deploy, upgrade, debug self-hosted services on Docker Compose / Portainer / Kubernetes / Helm: source of truth first, pinned versions, backups, health checks | [skills/homelab/services](skills/homelab/services/SKILL.md) |
+| `homelab:network` | DNS, reverse proxy, TLS, VPN, firewall, VLANs: hop-by-hop changes, lockout prevention, no admin exposure | [skills/homelab/network](skills/homelab/network/SKILL.md) |
+| `homelab:media` | Media server, *arr stack and Home Assistant: consistent paths, backups before upgrades, no physical device triggered without a yes | [skills/homelab/media](skills/homelab/media/SKILL.md) |
 
 Which one?
 
 - Changing structure without changing behavior: `refactor:*`. Adding or fixing behavior: `develop:*`. Moving to a newer framework version: `migrate:*`.
 - C#/.NET (any target, layered or not): `*:dotnet`. The skill reads the target framework and C# version and loads the matching version packs.
 - React / TypeScript: `*:react`.
+- Operating a self-hosted lab: `homelab:services` (apps and containers), `homelab:network` (reaching them), `homelab:media` (media and home automation).
 
 ## Install
 
@@ -43,6 +50,7 @@ Which one?
 /plugin install refactor@dev-agent-skills
 /plugin install develop@dev-agent-skills
 /plugin install migrate@dev-agent-skills
+/plugin install homelab@dev-agent-skills
 ```
 
 Installing a plugin installs every skill of that action (e.g. all `refactor:*` skills). Invoke `/refactor:dotnet`, `/develop:dotnet`, ..., or let the agent pick a skill from its description.
@@ -69,6 +77,15 @@ Skills hold defaults, not project facts. Each one starts by discovering the targ
 2. Conventions the repository documents (`AGENTS.md`, `CLAUDE.md`, `README`, `docs/`, `.editorconfig`, ...).
 3. The skill's defaults.
 
+## Homelab skills and a memory vault
+
+The `homelab:*` skills hold rules only. Your lab's facts (hosts, addresses, VLANs, domains, routes, admin API locations, backup paths, past decisions and traps) belong in a **private** place the skills read before acting and update after:
+
+- **Recommended: a private memory vault.** A private git repository (e.g. an Obsidian vault) with a root `CLAUDE.md` stating its rules, one folder per project (facts, decision notes, session logs) and `/resume`, `/save`, `/memorize` commands or session hooks. Every session then starts from what earlier sessions learned. Point agents at it with `VAULT_DIR` or your global agent instructions.
+- Or a private inventory file: `HOMELAB_INVENTORY=/path/to/inventory.md`, `homelab/inventory.md` in your infrastructure repository, or `~/.homelab/inventory.md`.
+
+Never put those facts in this repository or any public one.
+
 ## Shared rules
 
 Rules used by more than one skill have one source in `shared/` and are copied into each skill's `references/` by a script, so skills stay portable while rules never drift:
@@ -80,6 +97,7 @@ Rules used by more than one skill have one source in `shared/` and are copied in
 | `shared/dotnet/test-strategy.md` | all .NET skills |
 | `shared/dotnet/*.md` | `refactor:dotnet`, `develop:dotnet`, `migrate:dotnet` (rules, code shape, domain model, mapping and performance, layers, tests) |
 | `shared/dotnet/versions.md`, `net8.md` ... `net11.md` | `refactor:dotnet`, `develop:dotnet`, `migrate:dotnet`: version selector and per-version packs (prefer / replace old -> new / traps) |
+| `shared/homelab/*.md` | all `homelab:*` skills: inventory and memory vault lookup, change-safety loop |
 | `shared/react/*.md` | `refactor:react`, `develop:react` (hooks and state, patterns, React 19 features, anti-patterns) |
 
 `shared/manifest.json` lists which sources go to which skill. Edit the source, never a generated copy, then:

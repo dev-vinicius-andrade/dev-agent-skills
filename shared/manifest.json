@@ -61,6 +61,21 @@
       "dotnet/layers-and-conventions.md",
       "dotnet/mapping-and-performance.md",
       "dotnet/test-strategy.md"
+    ],
+    "skills/homelab/services": [
+      "core/commit-hygiene.md",
+      "homelab/inventory.md",
+      "homelab/safety.md"
+    ],
+    "skills/homelab/network": [
+      "core/commit-hygiene.md",
+      "homelab/inventory.md",
+      "homelab/safety.md"
+    ],
+    "skills/homelab/media": [
+      "core/commit-hygiene.md",
+      "homelab/inventory.md",
+      "homelab/safety.md"
     ]
   }
 }
